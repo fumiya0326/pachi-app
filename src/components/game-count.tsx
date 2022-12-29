@@ -74,5 +74,5 @@ export const GameCounter: FC<GameCounterProps> = (props) => {
       {gameCountButton(-100)}
       {gameCountButton(-10)}
     </Box>
-  )a
+  );
 }

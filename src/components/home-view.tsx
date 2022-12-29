@@ -65,6 +65,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
             return (
               <Grid
                 item
+                key={hand.name}
                 xs={4}
               >
                 <Button
