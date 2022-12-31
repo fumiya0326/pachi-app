@@ -22,6 +22,7 @@ export enum HandName {
 export interface Hand {
   name: HandName;
   count: number;
+  color: string,
 }
 
 /**
@@ -34,14 +35,14 @@ export interface HandState {
 /// initial state
 const initialState: HandState = {
   hands: [
-    { name: HandName.bigBonus, count: 0 },
-    { name: HandName.regularBonus, count: 0 },
-    { name: HandName.grape, count: 0 },
-    { name: HandName.replay, count: 0 },
-    { name: HandName.cherry, count: 0 },
-    { name: HandName.bell, count: 0 },
-    { name: HandName.pierrot, count: 0 },
-    { name: HandName.bar, count: 0 },
+    { name: HandName.bigBonus, count: 0 , color: '#EEE'},
+    { name: HandName.regularBonus, count: 0 , color: '#EEE'},
+    { name: HandName.grape, count: 0 , color: '#EEE'},
+    { name: HandName.replay, count: 0 , color: '#EEE'},
+    { name: HandName.cherry, count: 0 , color: '#EEE'},
+    { name: HandName.bell, count: 0 , color: '#EEE'},
+    { name: HandName.pierrot, count: 0 , color: '#EEE'},
+    { name: HandName.bar, count: 0 , color: '#EEE'},
   ]
 }
 
