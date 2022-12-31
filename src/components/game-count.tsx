@@ -4,45 +4,40 @@ import { FC } from "react";
 
 interface GameCounterProps {
   // ゲーム数変更通知
-  onChange: (value: number) => void;
+  onChangeTotalGameCount: (value: number) => void;
+  // 開始ゲーム数変更通知
+  onChangeStartingGameCount: (value: number) => void;
   // ゲーム回数
-  gameCount: number;
-  // BB回数
-  bigBonusCount: number;
-  // RB回数
-  regularBonusCount: number;
-  
+  totalGameCount: number;
+  // 開始ゲーム数
+  startingGameCount: number;
 }
 
+// ゲーム回数入力
 export const GameCounter: FC<GameCounterProps> = (props) => {
   const {
-    gameCount,
-    bigBonusCount,
-    regularBonusCount,
-    onChange,
+    totalGameCount,
+    startingGameCount,
+    onChangeTotalGameCount,
+    onChangeStartingGameCount,
   } = props;
 
-  // RB確率
-  const rbProbability = (() => {
-    if (gameCount && regularBonusCount) {
-      return `1/${(gameCount/regularBonusCount).toFixed(0)}`
-    } 
-    return '1/-';
-  })()
-  // BB確率
-  const bbProbability = (gameCount / bigBonusCount).toFixed(0)
-  // 合算確率
-  const combinedProbability = (gameCount / (bigBonusCount + regularBonusCount)).toFixed(0);
+  /**
+   * 開始ゲーム数変更時のハンドラ
+   * @param event イベント
+   */
+  const handleChangeStartingGameCount = (event: any) => {
+    const value = event.target.value as number;
+    onChangeStartingGameCount(value);
+  }
 
-  const gameCountButton = (gameCount: number) => {
-    return (
-      <Button
-        variant="outlined"
-        onClick={() => onChange(gameCount)}
-      >
-        {gameCount}
-      </Button>
-    )
+  /**
+   * 総ゲーム数変更時のハンドラ
+   * @param event イベント
+   */
+  const handleChangeTotalGameCount = (event: any) => {
+    const value = event.target.value as number;
+    onChangeTotalGameCount(value)
   }
 
   return (
@@ -51,28 +46,38 @@ export const GameCounter: FC<GameCounterProps> = (props) => {
         border: '1px solid #EEE'
       }}
     >
-      <Typography>
-        ゲーム数: {gameCount}
-      </Typography>
-      <Typography>
-        RB確率: {rbProbability}
-      </Typography>
-      <Typography>
-        BB確率: 1/{bbProbability}
-      </Typography>
-      <Typography>
-        合算確率: 1/{combinedProbability}
-      </Typography>
-      <Typography>
-        ぶどう確率: 1/
+      <Box
+        display='flex'
+      >
+        <Typography>
+          開始ゲーム数 
         </Typography>
-      {gameCountButton(1000)}
-      {gameCountButton(100)}
-      {gameCountButton(10)}
-      <br />
-      {gameCountButton(-1000)}
-      {gameCountButton(-100)}
-      {gameCountButton(-10)}
+        <TextField
+          sx={{
+            background: '#EEE'
+          }}
+          type="number"
+          variant='standard'
+          value={startingGameCount}
+          onChange={handleChangeStartingGameCount}
+        />
+      </Box>
+      <Box
+        display='flex'
+      >
+        <Typography>
+          合計ゲーム数 
+        </Typography>
+        <TextField
+          sx={{
+            background: '#EEE'
+          }}
+          type="number"
+          variant='standard'
+          value={totalGameCount}
+          onChange={handleChangeTotalGameCount}
+        />
+      </Box>
     </Box>
   );
 }
