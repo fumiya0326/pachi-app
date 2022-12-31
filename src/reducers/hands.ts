@@ -6,14 +6,14 @@ import { Action } from 'redux'
  * 役名一覧
  */
 export enum HandName {
-  bigBonus = 'bigBonus',
-  regularBonus = 'regularBonus',
-  grape = 'grape',
-  cherry = 'cherry',
-  replay = 'replay',
-  pierrot = 'pierrot',
-  bell = 'bell',
-  bar = 'bar',
+  bigBonus = 'BB',
+  regularBonus = 'RB',
+  grape = 'ぶどう',
+  cherry = 'チェリー',
+  replay = 'リプレイ',
+  pierrot = 'ピエロ',
+  bell = 'ベル',
+  bar = 'BAR',
 }
 
 /**
@@ -34,14 +34,14 @@ export interface HandState {
 /// initial state
 const initialState: HandState = {
   hands: [
-    { name: HandName.cherry, count: 0 },
-    { name: HandName.bell, count: 0 },
     { name: HandName.bigBonus, count: 0 },
     { name: HandName.regularBonus, count: 0 },
-    { name: HandName.bar, count: 0 },
-    { name: HandName.pierrot, count: 0 },
-    { name: HandName.replay, count: 0 },
     { name: HandName.grape, count: 0 },
+    { name: HandName.replay, count: 0 },
+    { name: HandName.cherry, count: 0 },
+    { name: HandName.bell, count: 0 },
+    { name: HandName.pierrot, count: 0 },
+    { name: HandName.bar, count: 0 },
   ]
 }
 
