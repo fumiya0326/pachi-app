@@ -22,6 +22,9 @@ export const HomeView: FC<HomeViewProps> = (props) => {
   // ゲーム数
   const [gameCount, setGameCount] = useState<number>(0);
 
+  // 開始ゲーム数
+  const [startingGameCount, setStartingGameCount] = useState<number>(0);
+
   // RB回数
   const [regularBonusCount, setRegularBonusCount] = useState<number>(0);
 
@@ -47,10 +50,20 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     }
   }, [hands]);
 
-  const handleChangeGameCount = (_gameCount: number) => {
-    console.log(gameCount)
-    const newValue = gameCount + _gameCount;
-    setGameCount(newValue);
+  /**
+   * ゲーム数変更時のハンドラ
+   * @param newGameCount ゲーム数
+   */
+  const handleChangeTotalGameCount = (newGameCount: number) => {
+    setGameCount(newGameCount);
+  }
+
+  /**
+   * 開始ゲーム数変更時のハンドラ
+   * @param gameCount ゲーム数
+   */
+  const handleChangeStartingGameCount = (newGameCount: number) => {
+    setStartingGameCount(newGameCount);
   }
 
 
@@ -83,10 +96,10 @@ export const HomeView: FC<HomeViewProps> = (props) => {
         }
       </Grid>
       <GameCounter
-        onChange={handleChangeGameCount}
-        gameCount={gameCount}
-        regularBonusCount={regularBonusCount}
-        bigBonusCount={bigBonusCount}
+        onChangeTotalGameCount={handleChangeTotalGameCount}
+        onChangeStartingGameCount={handleChangeStartingGameCount}
+        totalGameCount={gameCount}
+        startingGameCount={startingGameCount}
       />
     </>
   )
