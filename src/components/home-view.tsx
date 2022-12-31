@@ -9,6 +9,7 @@ import { ButtonBase, typographyClasses } from "@mui/material";
 import { typography } from "@mui/system";
 import { GameCounter } from "./game-count";
 import { ProbabilityCounter } from "./probability-count";
+import { TitleHeader } from "./title-header";
 
 interface HomeViewProps {
 
@@ -77,7 +78,9 @@ export const HomeView: FC<HomeViewProps> = (props) => {
 
   return (
     <>
-      <Header title="ジャグラー設定判別ツール" />
+      <TitleHeader
+        title="ジャグラー設定判別ツール"
+      />
       <GameCounter
         onChangeTotalGameCount={handleChangeTotalGameCount}
         onChangeStartingGameCount={handleChangeStartingGameCount}

@@ -43,7 +43,7 @@ export const GameCounter: FC<GameCounterProps> = (props) => {
   return (
     <Box
       sx={{
-        border: '1px solid #EEE'
+        m:1
       }}
     >
       <Box
@@ -54,6 +54,7 @@ export const GameCounter: FC<GameCounterProps> = (props) => {
         </Typography>
         <TextField
           sx={{
+            ml: 1,
             background: '#EEE'
           }}
           type="number"
@@ -70,6 +71,7 @@ export const GameCounter: FC<GameCounterProps> = (props) => {
         </Typography>
         <TextField
           sx={{
+            ml: 1,
             background: '#EEE'
           }}
           type="number"
