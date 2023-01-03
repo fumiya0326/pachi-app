@@ -17,18 +17,18 @@ export const HandButton: FC<HandButtonProps> = (props) => {
     <Button
       variant="contained"
       sx={{
-        width: '130px',
-        height: '50px',
+        height: '100px',
         display: 'block',
-        m:1
       }}
+      color={hand.color}
+      fullWidth
       onClick={() => {onClick(hand.name)}}
     >
       <Typography>
           {hand.name}
       </Typography>
       <Typography
-        variant="body1"
+        variant="h4"
       >
         {hand.count}
       </Typography>
