@@ -110,7 +110,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
       </Grid>
       <ProbabilityCounter
         caption="ブドウ確率"
-        gameCount={gameCount}
+        gameCount={gameCount - startingGameCount}
         occurrence={grapeCount}
         significantDigit={2}
       />
