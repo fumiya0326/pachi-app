@@ -10,6 +10,7 @@ import { typography } from "@mui/system";
 import { GameCounter } from "./game-count";
 import { ProbabilityCounter } from "./probability-count";
 import { TitleHeader } from "./title-header";
+import { HandButton } from "./hand-button";
 
 interface HomeViewProps {
 
@@ -98,15 +99,10 @@ export const HomeView: FC<HomeViewProps> = (props) => {
                 key={hand.name}
                 xs={4}
               >
-                <Button
-                  variant='outlined'
-                  onClick={() => { handleClick(hand.name) }}
-                >
-                  {hand.name}
-                </Button>
-                <Typography>
-                  {hand.count}
-                </Typography>
+                <HandButton
+                  hand={hand}
+                  onClick={handleClick}
+                />
               </Grid>
             )
           })
