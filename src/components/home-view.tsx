@@ -76,6 +76,32 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     setStartingGameCount(newGameCount);
   }
 
+  /**
+   * 一覧から役を取得
+   * @param handName 役名
+   * @returns 役
+   */
+  const handButton = (handName: HandName) => {
+    const hand = hands.find(hand => hand.name === handName);
+
+    if (!hand) return;
+
+    return (
+      <Grid
+        item
+        key={hand.id}
+        xs={4}
+        sx={{
+          p: 1,
+        }}
+      >
+        <HandButton
+          hand={hand}
+          onClick={handleClick}
+        />
+      </Grid>
+    )
+  }
 
   return (
     <>
@@ -91,29 +117,9 @@ export const HomeView: FC<HomeViewProps> = (props) => {
       <Grid
         container
       >
-        {
-          hands.map((hand) => {
-            return (
-              <Grid
-                item
-                key={hand.name}
-                xs={4}
-              >
-                <HandButton
-                  hand={hand}
-                  onClick={handleClick}
-                />
-              </Grid>
-            )
-          })
-        }
+        {handButton(HandName.bigBonus)}
+        {handButton(HandName.regularBonus)}
       </Grid>
-      <ProbabilityCounter
-        caption="ブドウ確率"
-        gameCount={gameCount - startingGameCount}
-        occurrence={grapeCount}
-        significantDigit={2}
-      />
       <ProbabilityCounter
         caption="RB確率"
         gameCount={gameCount}
@@ -128,6 +134,19 @@ export const HomeView: FC<HomeViewProps> = (props) => {
         caption="合計確率"
         gameCount={gameCount}
         occurrence={bigBonusCount + regularBonusCount}
+      />
+      <Grid
+        container
+      >
+        {handButton(HandName.grape)}
+        {handButton(HandName.replay)}
+        {handButton(HandName.cherry)}
+      </Grid>
+      <ProbabilityCounter
+        caption="ブドウ確率"
+        gameCount={gameCount - startingGameCount}
+        occurrence={grapeCount}
+        significantDigit={2}
       />
     </>
   )

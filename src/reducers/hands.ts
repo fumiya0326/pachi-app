@@ -20,9 +20,10 @@ export enum HandName {
  * 役
  */
 export interface Hand {
+  id: string,
   name: HandName;
   count: number;
-  color: string,
+  color: "error" | "secondary" | "success" | "warning" | "inherit" | "primary" | "info" | undefined,
 }
 
 /**
@@ -35,14 +36,14 @@ export interface HandState {
 /// initial state
 const initialState: HandState = {
   hands: [
-    { name: HandName.bigBonus, count: 0 , color: '#EEE'},
-    { name: HandName.regularBonus, count: 0 , color: '#EEE'},
-    { name: HandName.grape, count: 0 , color: '#EEE'},
-    { name: HandName.replay, count: 0 , color: '#EEE'},
-    { name: HandName.cherry, count: 0 , color: '#EEE'},
-    { name: HandName.bell, count: 0 , color: '#EEE'},
-    { name: HandName.pierrot, count: 0 , color: '#EEE'},
-    { name: HandName.bar, count: 0 , color: '#EEE'},
+    { id: 'bigBonus',name: HandName.bigBonus, count: 0 , color: 'error'},
+    { id: 'regularBonus',name: HandName.regularBonus, count: 0 , color: 'secondary'},
+    { id: 'grape',name: HandName.grape, count: 0 , color: 'success'},
+    { id: 'replay',name: HandName.replay, count: 0 , color: 'warning'},
+    { id: 'cherry',name: HandName.cherry, count: 0 , color: 'error'},
+    // { id: 'bell',name: HandName.bell, count: 0 , color: '#EEE'},
+    // { id: 'pierrot',name: HandName.pierrot, count: 0 , color: '#EEE'},
+    // { id: 'bar',name: HandName.bar, count: 0 , color: '#EEE'},
   ]
 }
 
