@@ -121,6 +121,11 @@ export const HomeView: FC<HomeViewProps> = (props) => {
         {handButton(HandName.regularBonus)}
       </Grid>
       <ProbabilityCounter
+        caption="合計確率"
+        gameCount={gameCount}
+        occurrence={bigBonusCount + regularBonusCount}
+      />
+      <ProbabilityCounter
         caption="RB確率"
         gameCount={gameCount}
         occurrence={regularBonusCount}
@@ -129,11 +134,6 @@ export const HomeView: FC<HomeViewProps> = (props) => {
         caption="BB確率"
         gameCount={gameCount}
         occurrence={bigBonusCount}
-      />
-      <ProbabilityCounter
-        caption="合計確率"
-        gameCount={gameCount}
-        occurrence={bigBonusCount + regularBonusCount}
       />
       <Grid
         container
