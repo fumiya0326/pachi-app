@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import { FC } from "react";
-import { Hand, Hands, HandType } from "../reducers/hands";
+import { Hands, HandType } from "../reducers/hands";
 
 interface AquiredCoinCounterProps {
   gameCount: number;
@@ -31,8 +32,25 @@ export const AquiredCoinCounter: FC<AquiredCoinCounterProps> = (props) => {
   const aquiredCount = reglarBonusCoinCount + bigBonusCoinCount + grapeCoinCount + replayCoinCount + cherryCoinCount - gameCoinCount;
 
   return (
-    <Typography>
-      獲得枚数: {aquiredCount}枚
-    </Typography>
+    <Box
+      display='flex'
+    >
+      <Typography
+        width="100px"
+      >
+        獲得枚数
+      </Typography>
+      <Typography
+        width="10px"
+      >
+        :
+      </Typography>
+      <Typography
+        fontWeight="bold"
+        fontSize="20px"
+      >
+        {aquiredCount}枚
+      </Typography>
+    </Box>
   );
 }
