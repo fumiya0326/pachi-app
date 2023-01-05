@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
-import { HandType, increment, Hand, Hands, incrementInitCount } from "../reducers/hands";
-import { FormControlLabel, FormGroup, Grid, Input, Switch } from "@mui/material";
+import { HandType, increment, Hands, incrementInitCount } from "../reducers/hands";
+import { FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
 import { useSelector } from "react-redux";
 import { store } from "../reducers/store";
 import { GameCounter } from "./game-count";
@@ -8,6 +8,7 @@ import { ProbabilityCounter } from "./probability-count";
 import { TitleHeader } from "./title-header";
 import { HandButton } from "./hand-button";
 import { AquiredCoinCounter } from "./aquired-counter";
+import { Chart } from './chart';
 
 interface HomeViewProps {
 
@@ -18,6 +19,15 @@ export enum InputMode {
   inital,
   // 通常入力
   normal,
+}
+
+export type Counts = {
+  setting1: number[],
+  setting2: number[],
+  setting3: number[],
+  setting4: number[],
+  setting5: number[],
+  setting6: number[],
 }
 
 export const HomeView: FC<HomeViewProps> = (props) => {
@@ -44,6 +54,27 @@ export const HomeView: FC<HomeViewProps> = (props) => {
   // 入力モード(初期値入力)
   const [inputMode, setInputMode] = useState<InputMode>(InputMode.normal);
 
+  // 初期カウント
+  const initialCounts = {
+    setting1: [],
+    setting2: [],
+    setting3: [],
+    setting4: [],
+    setting5: [],
+    setting6: [],
+  }
+
+  // シュミレーション結果
+  const [counts, setCounts] = useState<{
+    rbCounts: Counts,
+    bbCounts: Counts,
+    sumCounts: Counts,
+  }>({
+    rbCounts: initialCounts,
+    bbCounts: initialCounts,
+    sumCounts: initialCounts,
+  });
+
   /**
    * ボタンクリック時のハンドラ
    * @param handType 役の種類
@@ -60,6 +91,55 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     setBigBonusCount(bb.count);
     setGrapeCount(grape.count);
   }, [hands]);
+
+  // 処理中フラグ
+  const [isBusy, setBusy] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (gameCount > 10000) return;
+    if (isBusy) return;
+
+    //　処理中フラグを立てる
+    setBusy(true);
+
+    const setting1Result = bonusSimulator(5000, gameCount, 1 / 273.6, 1 / 409.1);
+    const setting2Result = bonusSimulator(5000, gameCount, 1 / 270.8, 1 / 385.5);
+    const setting3Result = bonusSimulator(5000, gameCount, 1 / 266.4, 1 / 336.1);
+    const setting4Result = bonusSimulator(5000, gameCount, 1 / 254.0, 1 / 290.0);
+    const setting5Result = bonusSimulator(5000, gameCount, 1 / 240.1, 1 / 268.6);
+    const setting6Result = bonusSimulator(5000, gameCount, 1 / 229.1, 1 / 229.1);
+
+    setCounts({
+      rbCounts: {
+        setting1: setting1Result.rbCounts,
+        setting2: setting2Result.rbCounts,
+        setting3: setting3Result.rbCounts,
+        setting4: setting4Result.rbCounts,
+        setting5: setting5Result.rbCounts,
+        setting6: setting6Result.rbCounts,
+      },
+      bbCounts: {
+        setting1: setting1Result.bbCounts,
+        setting2: setting2Result.bbCounts,
+        setting3: setting3Result.bbCounts,
+        setting4: setting4Result.bbCounts,
+        setting5: setting5Result.bbCounts,
+        setting6: setting6Result.bbCounts,
+      },
+      sumCounts: {
+        setting1: setting1Result.sumCounts,
+        setting2: setting2Result.sumCounts,
+        setting3: setting3Result.sumCounts,
+        setting4: setting4Result.sumCounts,
+        setting5: setting5Result.sumCounts,
+        setting6: setting6Result.sumCounts,
+      },
+    });
+
+    //　処理中フラグをおる
+    setBusy(false);
+
+  }, [gameCount, hands[HandType.regularBonus, HandType.bigBonus]]);
 
   /**
    * ゲーム数変更時のハンドラ
@@ -155,6 +235,63 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     }
   }
 
+  /**
+   * ボーナスシュミレータ
+   * @param loops ループ回数
+   * @param tryCount 試行回数
+   * @returns RB,BB,合算回数のシュミレーション結果
+   */
+  const bonusSimulator = (
+    loops: number,
+    tryCount: number,
+    bbProbability: number,
+    rbProbability: number,
+  ): { bbCounts: number[], rbCounts: number[], sumCounts: number[], } => {
+    let bbResult: number[] = [];
+    let rbResult: number[] = [];
+    let sumResult: number[] = [];
+
+    // 100回分のデータを初期作成する
+    for (let i = 0; i < 100; i++) {
+      bbResult.push(0)
+      rbResult.push(0)
+      sumResult.push(0)
+    }
+
+    // 規定の回数ループ
+    for (let i = 0; i < loops; i++) {
+      let rbCount = 0
+      let bbCount = 0
+
+      // 0 ~ BB確率
+      const bbThreshold = bbProbability;
+      // BB確率 ~ 合成確率
+      const rbThreshold = bbThreshold + rbProbability;
+
+      // nゲームでの当選回数をカウント
+      for (let gameCount = 0; gameCount < tryCount; gameCount++) {
+        // 生成乱数
+        const generatedNumber = Math.random();
+
+        if (generatedNumber < bbThreshold) {
+          // BB当選としてカウントする
+          bbCount += 1;
+        } else if (generatedNumber < rbThreshold) {
+          // RB当選としてカウントする
+          rbCount += 1;
+        }
+      }
+      bbResult[bbCount] += 1;
+      rbResult[rbCount] += 1;
+      sumResult[bbCount + rbCount] += 1;
+    }
+    return {
+      rbCounts: rbResult,
+      bbCounts: bbResult,
+      sumCounts: sumResult,
+    };
+  }
+
   return (
     <>
       <TitleHeader
@@ -220,6 +357,21 @@ export const HomeView: FC<HomeViewProps> = (props) => {
         gameCount={gameCount - startingGameCount}
         occurrence={grapeCount}
         significantDigit={2}
+      />
+      <Chart
+        title="設定6 RBシュミレータ(5000回)"
+        counts={counts.rbCounts}
+        currentValue={hands[HandType.regularBonus].count}
+      />
+      <Chart
+        title="設定6 BBシュミレータ(5000回)"
+        counts={counts.bbCounts}
+        currentValue={hands[HandType.bigBonus].count}
+      />
+      <Chart
+        title="設定6 合算シュミレータ(5000回)"
+        counts={counts.sumCounts}
+        currentValue={hands[HandType.regularBonus].count + hands[HandType.bigBonus].count}
       />
     </>
   )
