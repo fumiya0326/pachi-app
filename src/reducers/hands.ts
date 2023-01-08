@@ -1,6 +1,4 @@
-import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Reducer } from 'react';
-import { Action } from 'redux'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 /**
  * 役名一覧
@@ -19,7 +17,7 @@ export enum HandType {
 export interface Hand {
   id: HandType,
   description: string;
-  initCount: number;
+  initCount?: number;
   count: number;
   color: "error" | "secondary" | "success" | "warning" | "inherit" | "primary" | "info" | undefined,
 }
@@ -38,9 +36,9 @@ const initialState: HandState = {
   hands: {
     bigBonus: { id: HandType.bigBonus, description: "BB", initCount: 0, count: 0, color: 'error' },
     regularBonus: { id: HandType.regularBonus, description: "RB", initCount: 0, count: 0, color: 'secondary' },
-    grape: { id: HandType.grape, description: "ぶどう", initCount: 0, count: 0, color: 'success' },
-    replay: { id: HandType.replay, description: "リプレイ", initCount: 0, count: 0, color: 'warning' },
-    cherry: { id: HandType.cherry, description: "チェリー", initCount: 0, count: 0, color: 'error' },
+    grape: { id: HandType.grape, description: "ぶどう", count: 0, color: 'success' },
+    replay: { id: HandType.replay, description: "リプレイ", count: 0, color: 'warning' },
+    cherry: { id: HandType.cherry, description: "チェリー", count: 0, color: 'error' },
   }
 }
 
@@ -77,9 +75,30 @@ const slice = createSlice({
     incrementInitCount: (state: HandState, action: PayloadAction<HandType>) => {
       const _handType = action.payload;
       const _hand = state.hands[_handType];
+
+      // 初期カウントが定義されていない場合は処理を行わない
+      if (_hand.initCount === undefined) {
+        _hand.count += 1;
+        return;
+      }
+
       _hand.initCount += 1;
+
+      // もし初期カウントがカウントを上回っている場合はカウントを増加させる
       if (_hand.initCount > _hand.count) {
         _hand.count += 1;
+      }
+    },
+    /**
+     * カウントをデクリメントする
+     * @param state state
+     * @param action 役の種別のペイロードアクション
+     */
+    decrement: (state: HandState, action: PayloadAction<HandType>) => {
+      const _handType = action.payload;
+      const hand = state.hands[_handType];
+      if (hand.count > 0) {
+        hand.count -= 1;
       }
     }
   }
@@ -99,6 +118,14 @@ export const increment = (handType: HandType) => (dispatch: any) => {
  */
 export const incrementInitCount = (handType: HandType) => (dispatch: any) => {
   dispatch(slice.actions.incrementInitCount(handType));
+}
+
+/**
+ * カウントをデクリメントする
+ * @param handType 役の種別
+ */
+export const decrement = (handType: HandType) => (dispatch: any) => {
+  dispatch(slice.actions.decrement(handType));
 }
 
 export const hands = (state: any): any => { return state.handsState };
