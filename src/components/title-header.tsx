@@ -15,9 +15,9 @@ export const TitleHeader: FC<TitleHeaderProps> = (props) => {
       </title>
       <AppBar position="static" sx={{ mb: 1 }}>
         <Toolbar>
-          <Typography variant="h6" fontWeight="bold" component="div" sx={{ flexGrow: 1 }}>
+          <h1>
             {title}
-          </Typography>
+          </h1>
         </Toolbar>
       </AppBar>
     </>

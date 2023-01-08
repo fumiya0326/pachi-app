@@ -36,16 +36,6 @@ export const AquiredCoinCounter: FC<AquiredCoinCounterProps> = (props) => {
       display='flex'
     >
       <Typography
-        width="100px"
-      >
-        獲得枚数
-      </Typography>
-      <Typography
-        width="10px"
-      >
-        :
-      </Typography>
-      <Typography
         fontWeight="bold"
         fontSize="20px"
       >
