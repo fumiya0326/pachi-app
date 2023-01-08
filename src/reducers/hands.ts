@@ -100,6 +100,19 @@ const slice = createSlice({
       if (hand.count > 0) {
         hand.count -= 1;
       }
+    },
+    /**
+     * 初期値でリセット
+     * @param state state
+     */
+    reset: (state: HandState) => {
+      let _hands = state.hands;
+
+      _hands['bigBonus'] = initialState.hands['bigBonus'];
+      _hands['regularBonus'] = initialState.hands['regularBonus'];
+      _hands['grape'] = initialState.hands['grape'];
+      _hands['replay'] = initialState.hands['replay'];
+      _hands['cherry'] = initialState.hands['cherry'];
     }
   }
 });
@@ -126,6 +139,13 @@ export const incrementInitCount = (handType: HandType) => (dispatch: any) => {
  */
 export const decrement = (handType: HandType) => (dispatch: any) => {
   dispatch(slice.actions.decrement(handType));
+}
+
+/**
+ * 役をリセットする
+ */
+export const reset = () => (dispatch: any) => {
+  dispatch(slice.actions.reset());
 }
 
 export const hands = (state: any): any => { return state.handsState };

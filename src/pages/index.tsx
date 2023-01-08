@@ -9,8 +9,9 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
   return (
     <Provider store={store}>
-      <HomeView/>
-      <Analytics/>
+      <meta name="description" content="ジャグラー設定判別　シュミレート　ジャグラー子役カウンター ジャグラー獲得枚数"></meta>
+      <HomeView />
+      <Analytics />
     </Provider>
   )
 }

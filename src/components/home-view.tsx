@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { HandType, increment, Hands, incrementInitCount, decrement } from "../reducers/hands";
+import { HandType, increment, Hands, incrementInitCount, decrement, reset } from "../reducers/hands";
 import { Button, FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
 import { useSelector } from "react-redux";
 import { store } from "../reducers/store";
@@ -9,9 +9,11 @@ import { TitleHeader } from "./title-header";
 import { HandButton } from "./hand-button";
 import { AquiredCoinCounter } from "./aquired-counter";
 import { Chart } from './chart';
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import { MinusButton } from "./minus-button";
-import { execFileSync } from "child_process";
+import { Box } from "@mui/system";
+import { InitInputModeButton } from "./init-input-button";
+import { ConfirmModal } from "./confirm-modal";
+import { ResetButton } from "./reset-button";
 
 interface HomeViewProps {
 
@@ -39,7 +41,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
   const { } = props;
 
   // 役一覧
-  const hands: Hands = useSelector((state: any) => state.handsState.hands)
+  const hands: Hands = useSelector((state: any) => state.handsState.hands);
 
   // ゲーム数
   const [gameCount, setGameCount] = useState<number>(0);
@@ -58,6 +60,9 @@ export const HomeView: FC<HomeViewProps> = (props) => {
 
   // 入力モード(初期値: 通常入力)
   const [inputMode, setInputMode] = useState<InputMode>(InputMode.normal);
+
+  // リセット確認モーダルの表示状態
+  const [openResetConfirmModal, setOpenResetConfirmModal] = useState<boolean>(false);
 
   // 初期カウント
   const initialCounts = {
@@ -83,7 +88,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
   useEffect(() => {
     const rb = hands[HandType.regularBonus];
     const bb = hands[HandType.bigBonus];
-    const grape = hands[HandType.grape]
+    const grape = hands[HandType.grape];
     setRegularBonusCount(rb.count);
     setBigBonusCount(bb.count);
     setGrapeCount(grape.count);
@@ -231,7 +236,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
   const handleChangeInputModeSwitch = () => {
     if (inputMode === InputMode.inital) {
       setInputMode(InputMode.normal)
-    } else if (inputMode === InputMode.normal) {
+    } else {
       setInputMode(InputMode.inital)
     }
   }
@@ -245,6 +250,35 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     } else {
       setInputMode(InputMode.decrement);
     }
+  }
+
+  /**
+   * リセットボタン押下時のハンドラ
+   */
+  const handleClickResetButton = () => {
+    // 確認ダイアログを表示
+    setOpenResetConfirmModal(true)
+  }
+
+  /**
+   * リセット時のハンドラ
+   */
+  const handleConfirmModal = () => {
+    // ゲーム数をリセット
+    setGameCount(0);
+    setStartingGameCount(0);
+
+    // カウンタをリセット
+    store.dispatch(reset());
+
+    setOpenResetConfirmModal(false);
+  }
+
+  /**
+   * リセットキャンセル時のハンドラ
+   */
+  const handleCancelModal = () => {
+    setOpenResetConfirmModal(false);
   }
 
   /**
@@ -309,19 +343,21 @@ export const HomeView: FC<HomeViewProps> = (props) => {
       <TitleHeader
         title="ジャグラー設定判別ツール"
       />
+      <h2>ゲーム数設定</h2>
       <GameCounter
         onChangeTotalGameCount={handleChangeTotalGameCount}
         onChangeStartingGameCount={handleChangeStartingGameCount}
         totalGameCount={gameCount}
         startingGameCount={startingGameCount}
       />
-      <AquiredCoinCounter
-        gameCount={gameCount - startingGameCount}
-        hands={hands}
-      />
+      <h2>役カウンター</h2>
       <MinusButton
         inputMode={inputMode}
         onClick={handleClickMinusButton}
+      />
+      <InitInputModeButton
+        inputMode={inputMode}
+        onClick={handleChangeInputModeSwitch}
       />
       <Grid
         container
@@ -332,35 +368,8 @@ export const HomeView: FC<HomeViewProps> = (props) => {
           item
           xs={3}
         >
-          <FormGroup>
-            <FormControlLabel control={
-              <Switch
-                onClick={handleChangeInputModeSwitch}
-                color={'warning'}
-                size={'small'}
-              />
-            }
-              label={'ボーナス初期値入力'}
-              labelPlacement={'top'}
-            />
-          </FormGroup>
         </Grid>
       </Grid>
-      <ProbabilityCounter
-        caption="合計確率"
-        gameCount={gameCount}
-        occurrence={bigBonusCount + regularBonusCount}
-      />
-      <ProbabilityCounter
-        caption="RB確率"
-        gameCount={gameCount}
-        occurrence={regularBonusCount}
-      />
-      <ProbabilityCounter
-        caption="BB確率"
-        gameCount={gameCount}
-        occurrence={bigBonusCount}
-      />
       <Grid
         container
       >
@@ -368,26 +377,73 @@ export const HomeView: FC<HomeViewProps> = (props) => {
         {handButton(HandType.replay)}
         {handButton(HandType.cherry)}
       </Grid>
-      <ProbabilityCounter
-        caption="ブドウ確率"
+      <h2>獲得枚数</h2>
+      <AquiredCoinCounter
         gameCount={gameCount - startingGameCount}
-        occurrence={grapeCount}
-        significantDigit={2}
+        hands={hands}
       />
+      <h2>各確率</h2>
+      <Box
+        sx={{
+          border: '1px solid #EEE',
+          m: 1,
+          p: 1,
+        }}
+      >
+        <ProbabilityCounter
+          caption="合計確率"
+          gameCount={gameCount}
+          occurrence={bigBonusCount + regularBonusCount}
+        />
+        <ProbabilityCounter
+          caption="RB確率"
+          gameCount={gameCount}
+          occurrence={regularBonusCount}
+        />
+        <ProbabilityCounter
+          caption="BB確率"
+          gameCount={gameCount}
+          occurrence={bigBonusCount}
+        />
+        <ProbabilityCounter
+          caption="ブドウ確率"
+          gameCount={gameCount - startingGameCount}
+          occurrence={grapeCount}
+          significantDigit={2}
+        />
+      </Box>
+      <Box
+        display="flex"
+        justifyContent={'center'}
+      >
+        <ResetButton
+          onClick={handleClickResetButton}
+        />
+      </Box>
+      <h2>設定別5000回シュミレート結果</h2>
       <Chart
-        title="設定6 RBシュミレータ(5000回)"
+        title="RBシュミレータ"
         counts={counts.rbCounts}
         currentValue={hands[HandType.regularBonus].count}
       />
       <Chart
-        title="設定6 BBシュミレータ(5000回)"
+        title="BBシュミレータ"
         counts={counts.bbCounts}
         currentValue={hands[HandType.bigBonus].count}
       />
       <Chart
-        title="設定6 合算シュミレータ(5000回)"
+        title="合算シュミレータ"
         counts={counts.sumCounts}
         currentValue={hands[HandType.regularBonus].count + hands[HandType.bigBonus].count}
+      />
+      <ConfirmModal
+        open={openResetConfirmModal}
+        title={'リセット確認'}
+        caption={'ゲーム数及びカウントをリセットします。'}
+        onConfirm={handleConfirmModal}
+        onCancel={handleCancelModal}
+        confirmButtonCaption={'リセット'}
+        cancelButtonCaption={'キャンセル'}
       />
     </>
   )
