@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
-import { HandType, increment, Hands, incrementInitCount } from "../reducers/hands";
-import { FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
+import { HandType, increment, Hands, incrementInitCount, decrement } from "../reducers/hands";
+import { Button, FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
 import { useSelector } from "react-redux";
 import { store } from "../reducers/store";
 import { GameCounter } from "./game-count";
@@ -9,6 +9,9 @@ import { TitleHeader } from "./title-header";
 import { HandButton } from "./hand-button";
 import { AquiredCoinCounter } from "./aquired-counter";
 import { Chart } from './chart';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+import { MinusButton } from "./minus-button";
+import { execFileSync } from "child_process";
 
 interface HomeViewProps {
 
@@ -19,6 +22,8 @@ export enum InputMode {
   inital,
   // 通常入力
   normal,
+  // マイナス入力
+  decrement,
 }
 
 export type Counts = {
@@ -51,7 +56,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
   // ぶどう回数
   const [grapeCount, setGrapeCount] = useState<number>(0);
 
-  // 入力モード(初期値入力)
+  // 入力モード(初期値: 通常入力)
   const [inputMode, setInputMode] = useState<InputMode>(InputMode.normal);
 
   // 初期カウント
@@ -74,14 +79,6 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     bbCounts: initialCounts,
     sumCounts: initialCounts,
   });
-
-  /**
-   * ボタンクリック時のハンドラ
-   * @param handType 役の種類
-   */
-  const handleClick = (handType: HandType) => {
-    store.dispatch(increment(handType));
-  }
 
   useEffect(() => {
     const rb = hands[HandType.regularBonus];
@@ -158,16 +155,20 @@ export const HomeView: FC<HomeViewProps> = (props) => {
   }
 
   /**
-   * ボーナスボタンクリック時のハンドラ
-   * @param bonusType ボーナス種別
+   * カウンタボタンクリック時のハンドラ
+   * @param handType 役の種別
    */
-  const handleClickBonusButton = (bonusType: HandType) => {
-    const isInitInput = inputMode === InputMode.inital;
-    // 初期入力フラグが立っている場合は初期カウントをインクリメントする
-    if (isInitInput) {
-      store.dispatch(incrementInitCount(bonusType));
-    } else {
-      store.dispatch(increment(bonusType));
+  const handleClickCounterButton = (handType: HandType) => {
+    switch (inputMode) {
+      case InputMode.inital:
+        store.dispatch(incrementInitCount(handType));
+        break;
+      case InputMode.decrement:
+        store.dispatch(decrement(handType));
+        break;
+      case InputMode.normal:
+        store.dispatch(increment(handType));
+        break
     }
   }
 
@@ -191,7 +192,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
         <HandButton
           hand={bonus}
           hasInitCaption={true}
-          onClick={() => { handleClickBonusButton(bonus.id) }}
+          onClick={() => { handleClickCounterButton(bonus.id) }}
         />
       </Grid>
     )
@@ -218,7 +219,7 @@ export const HomeView: FC<HomeViewProps> = (props) => {
       >
         <HandButton
           hand={hand}
-          onClick={handleClick}
+          onClick={() => { handleClickCounterButton(handType) }}
         />
       </Grid>
     )
@@ -232,6 +233,17 @@ export const HomeView: FC<HomeViewProps> = (props) => {
       setInputMode(InputMode.normal)
     } else if (inputMode === InputMode.normal) {
       setInputMode(InputMode.inital)
+    }
+  }
+
+  /**
+   * マイナスボタン入力時のハンドラ
+   */
+  const handleClickMinusButton = () => {
+    if (inputMode === InputMode.decrement) {
+      setInputMode(InputMode.normal);
+    } else {
+      setInputMode(InputMode.decrement);
     }
   }
 
@@ -306,6 +318,10 @@ export const HomeView: FC<HomeViewProps> = (props) => {
       <AquiredCoinCounter
         gameCount={gameCount - startingGameCount}
         hands={hands}
+      />
+      <MinusButton
+        inputMode={inputMode}
+        onClick={handleClickMinusButton}
       />
       <Grid
         container
