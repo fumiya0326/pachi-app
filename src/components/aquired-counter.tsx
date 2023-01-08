@@ -9,7 +9,7 @@ interface AquiredCoinCounterProps {
 }
 
 export const AquiredCoinCounter: FC<AquiredCoinCounterProps> = (props) => {
-  const { 
+  const {
     gameCount,
     hands,
   } = props;
@@ -20,8 +20,8 @@ export const AquiredCoinCounter: FC<AquiredCoinCounterProps> = (props) => {
   const cherry = hands[HandType.cherry];
   const replay = hands[HandType.replay];
 
-  const reglarBonusCoinCount = (regularBonus.count - regularBonus.initCount) * 96;
-  const bigBonusCoinCount = (bigBonus.count - bigBonus.initCount) * 240;
+  const regularBonusCoinCount = (regularBonus.count - (regularBonus.initCount as number)) * 96;
+  const bigBonusCoinCount = (bigBonus.count - (bigBonus.initCount as number)) * 240;
   const grapeCoinCount = grape.count * 8;
   const cherryCoinCount = cherry.count * 2;
   const replayCoinCount = replay.count * 3;
@@ -29,7 +29,7 @@ export const AquiredCoinCounter: FC<AquiredCoinCounterProps> = (props) => {
   const gameCoinCount = gameCount * 3;
 
   // 獲得枚数
-  const aquiredCount = reglarBonusCoinCount + bigBonusCoinCount + grapeCoinCount + replayCoinCount + cherryCoinCount - gameCoinCount;
+  const aquiredCount = regularBonusCoinCount + bigBonusCoinCount + grapeCoinCount + replayCoinCount + cherryCoinCount - gameCoinCount;
 
   return (
     <Box
