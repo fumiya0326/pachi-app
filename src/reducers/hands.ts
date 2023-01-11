@@ -55,8 +55,8 @@ const slice = createSlice({
       const _hands = action.payload;
       state.hands = {
         ...state.hands,
-        ..._hands,
-      }
+        ..._hands
+      };
     },
     /**
      * カウントをインクリメントする
@@ -116,6 +116,14 @@ const slice = createSlice({
     }
   }
 });
+
+/**
+ * 役のstateを更新する
+ * @param hands 役一覧 
+ */
+export const update = (hands: Hands) => (dispatch: any) => {
+  dispatch(slice.actions.update(hands));
+}
 
 /**
  * カウントをインクリメントする
