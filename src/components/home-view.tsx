@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { HandType, increment, Hands, incrementInitCount, decrement, reset } from "../reducers/hands";
+import { HandType, increment, Hands, incrementInitCount, decrement, reset, HandState, update } from "../reducers/hands";
 import { Button, FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
 import { useSelector } from "react-redux";
 import { store } from "../reducers/store";
@@ -22,7 +22,7 @@ interface HomeViewProps {
 export enum InputMode {
   // 初期入力
   inital,
-  // 通常入力
+  // 通常入力f
   normal,
   // マイナス入力
   decrement,
@@ -85,6 +85,9 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     sumCounts: initialCounts,
   });
 
+  // 処理中フラグ
+  const [isBusy, setBusy] = useState<boolean>(false);
+
   useEffect(() => {
     const rb = hands[HandType.regularBonus];
     const bb = hands[HandType.bigBonus];
@@ -94,8 +97,30 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     setGrapeCount(grape.count);
   }, [hands]);
 
-  // 処理中フラグ
-  const [isBusy, setBusy] = useState<boolean>(false);
+  useEffect(() => {
+    // local storageからhandsを復元
+    const storagedHands = localStorage.getItem('hands');
+    if (storagedHands) {
+      const hands = JSON.parse(storagedHands);
+
+      store.dispatch(update(hands));
+    }
+
+    // local storageからゲーム数を復元
+    const storagedGameCount = localStorage.getItem("gameCount");
+    if (storagedGameCount) {
+
+      const gameCount = JSON.parse(storagedGameCount);
+      setGameCount(gameCount);
+    }
+
+    // local storageから開始ゲーム数を復元
+    const storagedStartingGameCount = localStorage.getItem("startingGameCount");
+    if (storagedStartingGameCount) {
+      const startingGameCount = JSON.parse(storagedStartingGameCount);
+      setStartingGameCount(startingGameCount);
+    }
+  }, []);
 
   useEffect(() => {
     if (gameCount > 10000) return;
@@ -142,6 +167,21 @@ export const HomeView: FC<HomeViewProps> = (props) => {
     setBusy(false);
 
   }, [gameCount, hands[HandType.regularBonus, HandType.bigBonus]]);
+
+  useEffect(() => {
+    // local storageにゲーム数をセットする
+    localStorage.setItem('gameCount', JSON.stringify(gameCount));
+  }, [gameCount]);
+
+  useEffect(() => {
+    // local storageに開始ゲーム数をセットする
+    localStorage.setItem('startingGameCount', JSON.stringify(startingGameCount));
+  }, [startingGameCount]);
+
+  useEffect(() => {
+    // local storageに開始ゲーム数をセットする
+    localStorage.setItem('hands', JSON.stringify(hands));
+  }, [hands]);
 
   /**
    * ゲーム数変更時のハンドラ
